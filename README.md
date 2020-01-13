@@ -1,5 +1,7 @@
 # gourmet-scrape
 
+Script that parses menu from http://ponavka.gourmetrestaurant.cz/ and posts it to Slack using incoming webhook
+
 ## Install dependencies 
 
 ```
