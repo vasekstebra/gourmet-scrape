@@ -41,7 +41,7 @@ def get_block(text):
 
 def get_heading():
     todays_date = datetime.today().strftime('%d.%m.%Y')
-    heading = f'*Dnešní menu* ( {todays_date} )'
+    heading = '*Dnešní menu* ( {} )'.format(todays_date)
     return get_block(heading)
 
 
@@ -53,7 +53,7 @@ def process_menu_item(menu):
     items = [item.text_content() for item in menu.getchildren()]
     if 'Polévka' in items[0] or 'Menu' in items[0]:
         menu_name = remove_alergens(items[0])
-        menu_item = f'*{menu_name}:* {items[1]} ({items[2]})'
+        menu_item = '*{}:* {} ({})'.format(menu_name, items[1], items[2])
         return get_block(menu_item)
 
 
