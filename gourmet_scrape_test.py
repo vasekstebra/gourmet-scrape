@@ -2,7 +2,7 @@
 
 import unittest
 
-from lxml import etree
+import lxml.html
 
 from gourmet_scrape import process_menu_item, remove_alergens
 
@@ -18,16 +18,13 @@ class TestGourmetScrape(unittest.TestCase):
         self.assertEqual('Menu 1', menu_name)
 
     def test_process_menu(self):
-        row = etree.Element('tr')
-
-        menu_name = etree.SubElement(row, 'td')
-        menu_name.text = 'Polévka *9'
-
-        menu_content = etree.SubElement(row, 'td')
-        menu_content.text = 'Uzená s bramborami / Vývar dle denní nabídky'
-
-        menu_price = etree.SubElement(row, 'td')
-        menu_price.text = '23 Kč'
+        row = lxml.html.fromstring('''
+            <tr>
+                <td>Polévka *9</td>
+                <td>Uzená s bramborami / Vývar dle denní nabídky</td>
+                <td>23 Kč</td>
+            </tr>
+        ''')
 
         menu = process_menu_item(row)
         expected_menu = '**Polévka:** Uzená s bramborami / Vývar dle denní nabídky (23 Kč)\n\n'
