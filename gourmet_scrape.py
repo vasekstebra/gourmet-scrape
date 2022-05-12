@@ -35,14 +35,9 @@ def get_menu(page):
     return menus
 
 
-def get_block(text):
-    return {'type': 'section', 'text': {'type': 'mrkdwn', 'text': text}}
-
-
 def get_heading():
     todays_date = datetime.today().strftime('%d.%m.%Y')
-    heading = '*Dnešní menu* ( {} )'.format(todays_date)
-    return get_block(heading)
+    return f'**Dnešní menu** ( {todays_date} )\n\n'
 
 
 def remove_alergens(menu_name):
@@ -53,29 +48,32 @@ def process_menu_item(menu):
     items = [item.text_content() for item in menu.getchildren()]
     if 'Polévka' in items[0] or 'Menu' in items[0]:
         menu_name = remove_alergens(items[0])
-        menu_item = '*{}:* {} ({})'.format(menu_name.strip(), items[1].strip(), items[2].strip())
-        return get_block(menu_item)
+        return f'**{menu_name.strip()}:** {items[1].strip()} ({items[2].strip()})\n\n'
 
 
 def prepare_data(menus):
     menu_items = [process_menu_item(menu) for menu in menus]
     menu_items = [item for item in menu_items if item is not None]
     heading = get_heading()
-    return {'blocks': [heading] + menu_items}
+    return ''.join([heading] + menu_items)
 
 
 if __name__ == '__main__':
-    if 'SLACK_GOURMET_URL' not in os.environ:
-        print('SLACK_GOURMET_URL not set')
+    if 'MM_GOURMET_URL' not in os.environ:
+        print('MM_GOURMET_URL not set')
         sys.exit(1)
-    page = get_page_content()
-    menus = get_menu(page)
     try:
-        slack_url = os.environ['SLACK_GOURMET_URL']
-        response = requests.post(slack_url, json=prepare_data(menus))
+        page = get_page_content()
+        menus = get_menu(page)
+        data = prepare_data(menus)
+        message_data = {
+            'text': data
+        }
+        mm_gourmet_url = os.environ['MM_GOURMET_URL']
+        response = requests.post(mm_gourmet_url, json=message_data)
         response.raise_for_status()
     except ConnectionError as e:
-        print('Could not connect to slack')
+        print('Could not connect to mattermost')
         sys.exit(1)
     except HTTPError as e:
         print(e)
