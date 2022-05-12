@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 
 import unittest
+
 from lxml import etree
+
 from gourmet_scrape import process_menu_item, remove_alergens
+
 
 class TestGourmetScrape(unittest.TestCase):
 
@@ -27,7 +30,7 @@ class TestGourmetScrape(unittest.TestCase):
         menu_price.text = '23 Kč'
 
         menu = process_menu_item(row)
-        expected_menu = {'type': 'section', 'text': {'type': 'mrkdwn', 'text': '*Polévka:* Uzená s bramborami / Vývar dle denní nabídky (23 Kč)'}}
+        expected_menu = '**Polévka:** Uzená s bramborami / Vývar dle denní nabídky (23 Kč)\n\n'
         self.assertEqual(expected_menu, menu)
         
 
